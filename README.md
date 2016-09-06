@@ -27,7 +27,7 @@ Please notice that i'm not affiliated in any way with [Bjango](http://bjango.com
 
 # Author
 
-Maximilian Götzfried ([@mgoetzfried](https://twitter.com/mgoetzfried), [maximiliangoetzfried.com](http://www.maximiliangoetzfried.com))
+Maximilian Götzfried ([@mxgzf](https://twitter.com/mxgzf), [mxgzf.com](http://www.mxgzf.com))
 
 # License
 
