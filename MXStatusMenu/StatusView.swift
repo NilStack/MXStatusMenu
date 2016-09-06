@@ -44,7 +44,7 @@ class StatusView: NSView {
 	
 	/// Draw the load bar
 	func drawBarInFrame(frame: NSRect, fillColor: NSColor, percentage: Double) {
-		backgroundGradient.drawInRect(frame, angle: 0)
+		backgroundGradient?.drawInRect(frame, angle: 0)
 		strokeColor.setStroke()
 		NSBezierPath.strokeRect(frame)
         let loadHeight = CGFloat(floor((Double(frame.size.height) + 1) * percentage))

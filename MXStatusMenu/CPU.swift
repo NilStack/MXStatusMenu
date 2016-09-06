@@ -21,7 +21,7 @@ class CPU {
 		let ticks = self.ticks()
 		var load = [Double](count: ticks.count, repeatedValue: 0)
 		if ticks.count == latestTicks.count {
-			for (i, loadInfo) in enumerate(ticks) {
+			for (i, loadInfo) in ticks.enumerate() {
 				let delta = loadInfo.delta(latestTicks[i])
 				let total = delta.cpu_ticks.0 + delta.cpu_ticks.1 + delta.cpu_ticks.2
 				if total > 0 {
@@ -30,15 +30,15 @@ class CPU {
 			}
 		}
 		latestTicks = ticks
-		return load.sorted({$0 > $1})
+		return load.sort({$0 > $1})
 	}
 	
 	/// Returns the current ticks of each cpu thread
 	func ticks() -> [processor_cpu_load_info] {
 		var ticks = [processor_cpu_load_info]()
-		var processorCount = UnsafeMutablePointer<natural_t>.alloc(1)
-		var loadInfos = UnsafeMutablePointer<processor_cpu_load_info_t>.alloc(1)
-		var infoCount = UnsafeMutablePointer<mach_msg_type_number_t>.alloc(1)
+		let processorCount = UnsafeMutablePointer<natural_t>.alloc(1)
+		let loadInfos = UnsafeMutablePointer<processor_cpu_load_info_t>.alloc(1)
+		let infoCount = UnsafeMutablePointer<mach_msg_type_number_t>.alloc(1)
 		
 		// get the ticks
 		if KERN_SUCCESS == host_processor_info(mach_host_self(), PROCESSOR_CPU_LOAD_INFO, processorCount, UnsafeMutablePointer<processor_info_array_t>(loadInfos), infoCount) {

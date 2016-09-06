@@ -100,7 +100,7 @@ class Network {
 				
 				// iterate the if_msghdr2 objects in the buffer to calculate the throughputs
 				while bufferIndex + ifmsgSize < bufferSize {
-					let ifmsg = UnsafePointer<if_msghdr2>(advance(buffer, bufferIndex))[0]
+					let ifmsg = UnsafePointer<if_msghdr2>(buffer.advancedBy(bufferIndex))[0]
 					if ifmsg.ifm_flags.bitIsSet(IFF_RUNNING) && ifmsg.ifm_flags.bitIsSet(IFF_UP) && ifmsg.ifm_addrs.bitIsSet(RTA_IFP) {
 						if let throughput = throughputs[ifmsg.ifm_index] {
 							throughputs[ifmsg.ifm_index] = Throughput(input: throughput.input+ifmsg.ifm_data.ifi_ibytes, output: throughput.output+ifmsg.ifm_data.ifi_obytes)
