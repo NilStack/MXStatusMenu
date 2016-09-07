@@ -30,7 +30,7 @@ class StatusController {
         
         cpuLoad = cpu.load()
         networkLoad = network.load()
-		statusItem = NSStatusBar.systemStatusBar().statusItemWithLength(statusItemWidth)
+		statusItem = NSStatusBar.system().statusItem(withLength: statusItemWidth)
 		statusItem.view = statusView
 		timer = Timer.repeatEvery(UpdateInterval) { [weak self] inTimer in
 			if let strongSelf = self {
@@ -43,6 +43,6 @@ class StatusController {
 	func updateStatusItem() {
 		cpuLoad = cpu.load()
 		networkLoad = network.load()
-		statusView.setNeedsDisplayInRect(statusView.bounds)
+		statusView.setNeedsDisplay(statusView.bounds)
 	}
 }

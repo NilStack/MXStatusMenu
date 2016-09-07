@@ -37,25 +37,25 @@ class StatusView: NSView {
 	}
 	
 	/// Get the necessary width of the NSStatusItem for a given number of cpu threads
-	class func widthOfCPUCount(cpuCount: Int) -> CGFloat {
+	class func widthOfCPUCount(_ cpuCount: Int) -> CGFloat {
 		let cpuCount = CGFloat(cpuCount)
 		return LeftMargin + (2 + cpuCount) * BarWidth + (1 + cpuCount) * GapBetweenBars + RightMargin
 	}
 	
 	/// Draw the load bar
-	func drawBarInFrame(frame: NSRect, fillColor: NSColor, percentage: Double) {
-		backgroundGradient?.drawInRect(frame, angle: 0)
+	func drawBarInFrame(_ frame: NSRect, fillColor: NSColor, percentage: Double) {
+		backgroundGradient?.draw(in: frame, angle: 0)
 		strokeColor.setStroke()
-		NSBezierPath.strokeRect(frame)
+		NSBezierPath.stroke(frame)
         let loadHeight = CGFloat(floor((Double(frame.size.height) + 1) * percentage))
 		let loadFrame = NSMakeRect(frame.origin.x - 0.5, frame.origin.y - 0.5, frame.size.width + 1, loadHeight)
 		fillColor.setFill()
-		NSBezierPath.fillRect(loadFrame)
+		NSBezierPath.fill(loadFrame)
 	}
 	
 	/// Draw the contents of the StatusView
-	override func drawRect(dirtyRect: NSRect) {
-		super.drawRect(dirtyRect)
+	override func draw(_ dirtyRect: NSRect) {
+		super.draw(dirtyRect)
 		var frame = NSMakeRect(LeftMargin, 3.5, BarWidth, 16)
 		
 		// draw the network bars

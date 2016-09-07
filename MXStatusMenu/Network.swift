@@ -11,7 +11,7 @@ class Network {
     /// Describes a network throughput
 	struct Throughput {
 		let input, output: UInt64
-		func delta(laterValue: Throughput) -> Throughput {
+		func delta(_ laterValue: Throughput) -> Throughput {
 			let deltaInput = input.deltaByRecognizingOverflow(laterValue.input)
 			let deltaOutput = output.deltaByRecognizingOverflow(laterValue.output)
 			return Throughput(input: deltaInput, output: deltaOutput)
@@ -37,7 +37,7 @@ class Network {
 	
 	/// The request struct used for the sysctl calls
 	lazy var sysctlRequest: UnsafeMutablePointer<Int32> = {
-		let sysctlRequest = UnsafeMutablePointer<Int32>.alloc(6)
+		let sysctlRequest = UnsafeMutablePointer<Int32>.allocate(capacity: 6)
 		sysctlRequest[0] = CTL_NET
 		sysctlRequest[1] = PF_ROUTE
 		sysctlRequest[2] = 0
@@ -48,7 +48,7 @@ class Network {
 		}()
 	
 	/// The size of if_msghdr2 structs
-	lazy var ifmsgSize: Int = sizeof(if_msghdr2)
+	lazy var ifmsgSize: Int = MemoryLayout<if_msghdr2>.size
 	
     /// Returns the current network load
 	func load() -> Load {
@@ -94,13 +94,13 @@ class Network {
 		if -1 != sysctl(sysctlRequest, 6, nil, &bufferSize, nil, 0) && bufferSize > 0 {
 			
 			// fill the buffer
-			let buffer = UnsafeMutablePointer<UInt8>.alloc(bufferSize)
+			let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
 			if -1 != sysctl(sysctlRequest, 6, buffer, &bufferSize, nil, 0)  {
 				var bufferIndex: Int = 0
 				
 				// iterate the if_msghdr2 objects in the buffer to calculate the throughputs
 				while bufferIndex + ifmsgSize < bufferSize {
-					let ifmsg = UnsafePointer<if_msghdr2>(buffer.advancedBy(bufferIndex))[0]
+					let ifmsg = UnsafePointer<if_msghdr2>(buffer.advanced(by: bufferIndex))[0]
 					if ifmsg.ifm_flags.bitIsSet(IFF_RUNNING) && ifmsg.ifm_flags.bitIsSet(IFF_UP) && ifmsg.ifm_addrs.bitIsSet(RTA_IFP) {
 						if let throughput = throughputs[ifmsg.ifm_index] {
 							throughputs[ifmsg.ifm_index] = Throughput(input: throughput.input+ifmsg.ifm_data.ifi_ibytes, output: throughput.output+ifmsg.ifm_data.ifi_obytes)
@@ -117,7 +117,7 @@ class Network {
 			}
 			
 			// clean up
-			buffer.dealloc(bufferSize)
+			buffer.deallocate(capacity: bufferSize)
 		}
 		
 		return throughputs
