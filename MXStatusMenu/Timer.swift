@@ -27,8 +27,8 @@ class Timer {
 		}()
     
     /// Convenience class method that creates and start a timer
-	class func repeatEvery(_ repeatEvery: Double, closure: Closure) -> Timer {
-		let timer = Timer(queue: DispatchQueue.global(priority: 0), closure: closure)
+	class func repeatEvery(_ repeatEvery: Double, closure: @escaping Closure) -> Timer {
+		let timer = Timer(queue: DispatchQueue.global(), closure: closure)
 		timer.resume(0, repeat: repeatEvery, leeway: 0)
 		return timer
 	}
