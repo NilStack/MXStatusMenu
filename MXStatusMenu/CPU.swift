@@ -4,7 +4,7 @@ import Darwin
 class CPU {
 	
 	/// The ticks of the latest check
-	var latestTicks = [processor_cpu_load_info]()
+	var latestTicks = [integer_t]()
     
     /// The number of cpu threads
     var numberOfThreads: Int {
@@ -22,11 +22,11 @@ class CPU {
 		var load = [Double](repeating: 0, count: ticks.count)
 		if ticks.count == latestTicks.count {
 			for (i, loadInfo) in ticks.enumerated() {
-				let delta = loadInfo.delta(latestTicks[i])
-				let total = delta.cpu_ticks.0 + delta.cpu_ticks.1 + delta.cpu_ticks.2
-				if total > 0 {
-					load[i] = Double(delta.cpu_ticks.0 + delta.cpu_ticks.1) / Double(total)
-				}
+//				let delta = loadInfo.delta(latestTicks[i])
+//				let total = delta.cpu_ticks.0 + delta.cpu_ticks.1 + delta.cpu_ticks.2
+//				if total > 0 {
+//					load[i] = Double(delta.cpu_ticks.0 + delta.cpu_ticks.1) / Double(total)
+//				}
 			}
 		}
 		latestTicks = ticks
@@ -34,16 +34,19 @@ class CPU {
 	}
 	
 	/// Returns the current ticks of each cpu thread
-	func ticks() -> [processor_cpu_load_info] {
-		var ticks = [processor_cpu_load_info]()
+	func ticks() -> [integer_t] {
+        
+		var ticks = [integer_t]()
 		let processorCount = UnsafeMutablePointer<natural_t>.allocate(capacity: 1)
-		let loadInfos = UnsafeMutablePointer<processor_cpu_load_info_t>.allocate(capacity: 1)
+		let loadInfos = UnsafeMutablePointer<processor_info_array_t?>.allocate(capacity: 1)
 		let infoCount = UnsafeMutablePointer<mach_msg_type_number_t>.allocate(capacity: 1)
 		
 		// get the ticks
-        if KERN_SUCCESS == host_processor_info(mach_host_self(), PROCESSOR_CPU_LOAD_INFO, processorCount, UnsafeMutablePointer<processor_info_array_t>(loadInfos), infoCount) {
+        if KERN_SUCCESS == host_processor_info(mach_host_self(), PROCESSOR_CPU_LOAD_INFO, processorCount, loadInfos, infoCount),
+            let loadInfo = loadInfos[0] {
+            
 			for i in 0..<Int(processorCount[0]) {
-                ticks.append(loadInfos[0][i])
+                ticks.append(loadInfo[i])
 			}
 		} else {
 			ticks = latestTicks
