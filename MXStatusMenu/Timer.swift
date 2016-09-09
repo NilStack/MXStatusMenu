@@ -48,16 +48,38 @@ class Timer {
 	func resume(_ start: Int64, repeat: UInt64, leeway: UInt64) {
 		if isSuspended {
 			let startTime = DispatchTime.now() + Double(start) / Double(NSEC_PER_SEC)
-            source.setTimer(start: startTime, interval: `repeat`, leeway: leeway)
-            source.setEventHandler { [weak self] in
-                if let timer = self {
-                    timer.fire()
-                }
-            }
-			source.resume()
-			isSuspended = false
-		}
-	}
+            
+            source.scheduleRepeating(
+                deadline: startTime,
+                interval: DispatchTimeInterval.seconds(Int(`repeat`)),
+                leeway: DispatchTimeInterval.seconds(Int(leeway))
+            )
+            
+            /*
+             source.  { [weak self] in
+             if let timer = self {
+             timer.fire()
+             }
+             }
+             
+             public func scheduleOneshot(deadline: DispatchTime, leeway: DispatchTimeInterval = default)
+             
+             public func scheduleOneshot(wallDeadline: DispatchWallTime, leeway: DispatchTimeInterval = default)
+             
+             public func scheduleRepeating(deadline: DispatchTime, interval: DispatchTimeInterval, leeway: DispatchTimeInterval = default)
+             
+             public func scheduleRepeating(deadline: DispatchTime, interval: Double, leeway: DispatchTimeInterval = default)
+             
+             public func scheduleRepeating(wallDeadline: DispatchWallTime, interval: DispatchTimeInterval, leeway: DispatchTimeInterval = default)
+             
+             public func scheduleRepeating(wallDeadline: DispatchWallTime, interval: Double, leeway: DispatchTimeInterval = default)
+             
+             source.resume()
+             isSuspended = false
+             }
+             */
+        }
+    }
     
     /// Suspend the timer
 	func suspend() {
